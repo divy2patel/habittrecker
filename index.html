@@ -1,609 +1,403 @@
 <!doctype html>
-<html lang="en" class="h-full">
- <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Habit Tracker</title>
-  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
-  <script src="https://cdn.jsdelivr.net/npm/lucide@0.263.0/dist/umd/lucide.min.js"></script>
-  <script src="/_sdk/element_sdk.js"></script>
-  <script src="/_sdk/data_sdk.js"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
-  <style>
-    html, body { height: 100%; margin: 0; }
-    * { font-family: 'Outfit', sans-serif; box-sizing: border-box; }
-    
-    :root {
-      --clr-bg: #faf8f6;
-      --clr-surface: #ffffff;
-      --clr-text: #2d2825;
-      --clr-primary: #d4a574;
-      --clr-secondary: #f5e6d3;
-      --clr-accent: #e8d5c4;
-    }
-    
-    .fade-in { animation: fadeIn 0.5s ease-out; }
-    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-    
-    .day-badge {
-      background: linear-gradient(135deg, var(--clr-primary), var(--clr-accent));
-      box-shadow: 0 8px 24px rgba(212, 165, 116, 0.15);
-    }
-    
-    .habit-item {
-      transition: all 0.2s ease;
-      border: 2px solid transparent;
-    }
-    
-    .habit-item:hover {
-      border-color: var(--clr-primary);
-      background: var(--clr-secondary) !important;
-    }
-    
-    .habit-item.checked {
-      background: var(--clr-secondary);
-      border-color: var(--clr-primary);
-    }
-    
-    .progress-bar {
-      background: var(--clr-secondary);
-      border-radius: 12px;
-      overflow: hidden;
-    }
-    
-    .progress-fill {
-      background: linear-gradient(90deg, var(--clr-primary), var(--clr-accent));
-      transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-      height: 100%;
-    }
-    
-    .calendar-day {
-      transition: all 0.2s ease;
-      border-radius: 10px;
-      cursor: pointer;
-      font-weight: 500;
-    }
-    
-    .calendar-day:hover {
-      transform: scale(1.05);
-    }
-    
-    .calendar-day.selected {
-      background: var(--clr-primary);
-      color: #fff;
-    }
-    
-    .calendar-day.has-data {
-      box-shadow: inset 0 -2px 0 var(--clr-primary);
-    }
-    
-    .calendar-day.today {
-      border: 2px solid var(--clr-primary);
-    }
-    
-    input[type="checkbox"] {
-      accent-color: var(--clr-primary);
-      cursor: pointer;
-    }
-    
-    .quote-card {
-      background: linear-gradient(135deg, var(--clr-secondary), var(--clr-accent));
-      border-left: 4px solid var(--clr-primary);
-    }
-    
-    .toast {
-      animation: toastIn 0.3s ease, toastOut 0.3s ease 2.7s;
-    }
-    
-    @keyframes toastIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-    @keyframes toastOut { from { opacity: 1; } to { opacity: 0; } }
-    
-    .btn-primary {
-      background: var(--clr-primary);
-      color: #fff;
-      border: none;
-      cursor: pointer;
-      border-radius: 12px;
-      font-weight: 600;
-      transition: all 0.2s ease;
-    }
-    
-    .btn-primary:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 4px 12px rgba(212, 165, 116, 0.2);
-    }
-    
-    .card {
-      background: var(--clr-surface);
-      border-radius: 16px;
-      box-shadow: 0 2px 8px rgba(45, 40, 37, 0.08);
-      transition: box-shadow 0.2s ease;
-    }
-    
-    .card:hover {
-      box-shadow: 0 4px 16px rgba(45, 40, 37, 0.12);
-    }
-  </style>
-  <style>body { box-sizing: border-box; }</style>
- </head>
- <body class="h-full" style="background: var(--clr-bg); color: var(--clr-text);">
-  <div id="app" class="h-full flex flex-col overflow-auto">
-   <main class="flex-1 overflow-auto p-4 md:p-6 lg:p-8">
-    <div class="max-w-2xl mx-auto space-y-6"><!-- Header -->
-     <div class="fade-in">
-      <h1 id="headerTitle" class="text-3xl md:text-4xl font-bold">Habit Tracker</h1>
-      <p id="headerSubtitle" class="text-sm mt-2" style="color: #8b7355; opacity: 0.8;">Success starts the moment you stop postponing your potential.</p>
-     </div><!-- Day Counter -->
-     <div class="day-badge card p-6 md:p-8 text-center fade-in">
-      <p style="color: #8b7355; font-size: 0.9rem; font-weight: 500; letter-spacing: 1px;">CONSECUTIVE DAYS</p>
-      <div class="text-5xl md:text-6xl font-bold mt-2 mb-1" style="color: var(--clr-text);"><span id="dayCount">0</span>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Habit Tracker</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--clr-bg:#faf8f6;--clr-surface:#ffffff;--clr-text:#2d2825;--clr-primary:#d4a574;--clr-secondary:#f5e6d3;--clr-accent:#e8d5c4}
+*{font-family:'Outfit',sans-serif;box-sizing:border-box;margin:0;padding:0}
+html,body{min-height:100%;background:var(--clr-bg);color:var(--clr-text)}
+body{padding:1rem}
+.fade-in{animation:fadeIn .5s ease-out}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.card{background:var(--clr-surface);border-radius:16px;box-shadow:0 2px 8px rgba(45,40,37,.08);padding:1.25rem;margin-bottom:1rem}
+.day-badge{background:linear-gradient(135deg,var(--clr-primary),var(--clr-accent));text-align:center;padding:1.5rem}
+.btn{padding:.45rem 1rem;border-radius:10px;font-size:.8rem;font-weight:600;cursor:pointer;border:none;display:inline-flex;align-items:center;gap:.3rem;transition:all .2s}
+.btn-primary{background:var(--clr-primary);color:#fff}
+.btn-primary:hover{transform:translateY(-1px);box-shadow:0 4px 12px rgba(212,165,116,.3)}
+.btn-outline{background:var(--clr-secondary);color:var(--clr-primary);border:2px solid var(--clr-primary)}
+.btn-wide{width:100%;justify-content:center;padding:.6rem;font-size:.85rem}
+.habit-row{display:flex;align-items:center;gap:.6rem;padding:.6rem .8rem;border-radius:10px;border:2px solid transparent;transition:all .2s;cursor:pointer;margin-bottom:.4rem}
+.habit-row:hover{border-color:var(--clr-primary);background:var(--clr-secondary)}
+.habit-row.checked{background:var(--clr-secondary);border-color:var(--clr-primary)}
+.habit-row input[type=checkbox]{width:18px;height:18px;accent-color:var(--clr-primary);cursor:pointer;flex-shrink:0}
+.habit-name{flex:1;font-size:.88rem;font-weight:500}
+.habit-name.done{text-decoration:line-through;opacity:.45}
+.streak-badge{font-size:.72rem;background:var(--clr-secondary);color:var(--clr-primary);padding:.15rem .55rem;border-radius:20px;font-weight:600;white-space:nowrap}
+.remove-btn{background:none;border:none;cursor:pointer;opacity:.4;font-size:1rem;line-height:1;padding:.1rem .3rem;transition:opacity .2s}
+.remove-btn:hover{opacity:1}
+.progress-bar{background:var(--clr-secondary);border-radius:12px;height:14px;overflow:hidden;margin:.4rem 0}
+.progress-fill{background:linear-gradient(90deg,var(--clr-primary),var(--clr-accent));height:100%;transition:width .5s cubic-bezier(.4,0,.2,1)}
+.add-form{display:none;background:var(--clr-secondary);border:2px solid var(--clr-primary);border-radius:12px;padding:.8rem;margin-bottom:.8rem}
+.add-form.open{display:block}
+.add-form input,.add-form select{padding:.4rem .7rem;border-radius:8px;border:2px solid #ddd;font-size:.85rem;outline:none;background:#fff}
+.add-form input{flex:1;min-width:0}
+.nav-row{display:flex;align-items:center;gap:.5rem}
+.nav-row .center{flex:1;text-align:center}
+.quote-card{background:linear-gradient(135deg,var(--clr-secondary),var(--clr-accent));border-left:4px solid var(--clr-primary);padding:1.25rem;border-radius:12px;text-align:center;font-size:.95rem;font-weight:500;margin-top:1rem;margin-bottom:2rem}
+#toast-area{position:fixed;bottom:1rem;right:1rem;z-index:999;display:flex;flex-direction:column;gap:.4rem}
+.toast{background:var(--clr-primary);color:#fff;padding:.55rem 1.1rem;border-radius:10px;font-size:.82rem;font-weight:600;animation:toastIn .3s ease;box-shadow:0 4px 12px rgba(212,165,116,.35)}
+@keyframes toastIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+</style>
+</head>
+<body>
+
+<div style="max-width:640px;margin:0 auto">
+
+  <!-- Header -->
+  <div class="fade-in" style="margin-bottom:1rem">
+    <h1 style="font-size:2rem;font-weight:800">Habit Tracker</h1>
+    <p style="font-size:.85rem;color:#8b7355;margin-top:.25rem">Success starts the moment you stop postponing your potential.</p>
+  </div>
+
+  <!-- Streak Counter -->
+  <div class="card day-badge fade-in">
+    <p style="color:#7a5c3a;font-size:.78rem;font-weight:600;letter-spacing:1px">CONSECUTIVE DAYS</p>
+    <div style="font-size:3.5rem;font-weight:800;color:var(--clr-text)" id="dayCount">0</div>
+    <p style="color:#7a5c3a;font-size:.88rem">Keep the streak alive! 🔥</p>
+  </div>
+
+  <!-- Habits Card -->
+  <div class="card fade-in">
+    <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.5rem;margin-bottom:.8rem">
+      <h2 style="font-size:1.1rem;font-weight:700">📝 Today's Habits</h2>
+      <div style="display:flex;gap:.4rem;flex-wrap:wrap">
+        <button class="btn btn-primary" onclick="completeAll()">✔ Complete All</button>
+        <button class="btn btn-outline" onclick="uncheckAll()">↩ Uncheck All</button>
+        <button class="btn btn-primary" onclick="toggleAddForm()">+ Add Habit</button>
       </div>
-      <p style="color: #8b7355; font-size: 0.95rem;">Keep the streak alive! 🔥</p>
-     </div><!-- Today's Habits -->
-     <div class="card p-6 fade-in">
-      <div class="flex items-center justify-between mb-4">
-       <h2 class="text-xl font-bold">📝 Today's Habits</h2>
-       <div class="flex gap-2"><button onclick="completeAll()" class="btn-primary px-4 py-2 text-sm flex items-center gap-2"> <i data-lucide="check-circle" style="width: 16px; height: 16px;"></i> Complete All </button> <button onclick="showAddHabit()" class="btn-primary px-4 py-2 text-sm flex items-center gap-2"> <i data-lucide="plus" style="width: 16px; height: 16px;"></i> Add Habit </button>
-       </div>
-      </div><!-- Add Habit Form -->
-      <div id="addHabitForm" class="hidden mb-4 p-4 rounded-12 border-2" style="border-color: var(--clr-primary); background: var(--clr-secondary);">
-       <div class="flex gap-2 mb-2"><input id="newHabitInput" type="text" placeholder="Habit name..." class="flex-1 px-3 py-2 rounded-lg border-2" style="border-color: #ddd; outline: none;"> <select id="newHabitIcon" class="px-3 py-2 rounded-lg border-2" style="border-color: #ddd;"> <option value="🕉️">🕉️ Chanting</option> <option value="💻">💻 DSA Question</option> <option value="📚">📚 College Study</option> <option value="👩🏻‍💻">👩🏻‍💻 Coding</option> <option value="💧">💧 3 Lit Water</option> <option value="📖">📖 Book Reading</option> <option value="🚶‍♀️">🚶‍♀️ Walk/Workout</option> <option value="🚫">🚫 No Reels</option> <option value="📝">📝 Daily Planning</option> <option value="🌸">🌸 Thread Post</option> <option value="🧠">🧠 New Words</option> <option value="🔁">🔁 Revision</option> <option value="🥗">🥗 Healthy Food</option> </select>
-       </div>
-       <div class="flex gap-2"><button onclick="addHabit()" class="btn-primary px-4 py-2 text-sm flex-1">Save</button> <button onclick="cancelAddHabit()" class="px-4 py-2 rounded-lg" style="border: 2px solid #ddd; background: transparent; cursor: pointer;">Cancel</button>
-       </div>
-      </div><!-- Habits List -->
-      <div id="habitsList" class="space-y-2"></div>
-      <div id="emptyHabits" class="text-center py-6" style="color: #8b7355;">
-       <p>No habits yet. Click <strong>Add Habit</strong> to get started! 🌟</p>
-      </div><button onclick="endDayAndMove()" class="btn-primary w-full px-4 py-3 text-sm font-semibold flex items-center justify-center gap-2"> <i data-lucide="check-square" style="width: 18px; height: 18px;"></i> End Day &amp; Move to Tomorrow </button>
-     </div><!-- Date Navigation -->
-     <div class="card p-6 fade-in">
-      <div class="flex items-center justify-between mb-4">
-       <button onclick="previousDay()" class="btn-primary px-3 py-2 text-sm flex items-center gap-2"> <i data-lucide="chevron-left" style="width: 16px; height: 16px;"></i> </button>
-       <div class="text-center flex-1">
-        <p style="color: #8b7355; font-size: 0.85rem; font-weight: 500;">Selected Date</p>
-        <p id="selectedDateDisplay" class="text-lg font-bold">Today</p>
-       </div><button onclick="nextDay()" class="btn-primary px-3 py-2 text-sm flex items-center gap-2"> <i data-lucide="chevron-right" style="width: 16px; height: 16px;"></i> </button>
-      </div>
-     </div><!-- Progress Section -->
-     <div class="card p-6 fade-in">
-      <div class="flex items-center justify-between mb-3"><span class="text-lg font-bold">Daily Progress</span> <span id="progressText" class="text-2xl font-bold" style="color: var(--clr-primary);">0 / 0</span>
-      </div>
-      <div class="progress-bar h-4">
-       <div id="progressFill" class="progress-fill" style="width: 0%;"></div>
-      </div>
-      <p id="progressLabel" class="text-xs mt-2" style="color: #8b7355;">0% completed</p>
-     </div><!-- Habit Score Graph -->
-     <div class="card p-6 fade-in">
-      <h2 class="text-lg font-bold mb-4">📊 Monthly Habit Score</h2>
-      <div style="height: 280px; position: relative;">
-       <svg id="scoreGraph" style="width: 100%; height: 100%;" viewbox="0 0 600 280" preserveaspectratio="xMidYMid meet"></svg>
-      </div>
-      <p class="text-xs mt-3" style="color: #8b7355;">Habits completed each day this month</p>
-     </div><!-- Motivational Quote -->
-     <div id="quoteCard" class="quote-card card p-6 fade-in">
-      <p class="text-center text-lg font-medium" id="motivationalQuote" style="color: var(--clr-text);">Success starts the moment you stop postponing your potential.</p>
-     </div>
     </div>
-   </main>
-  </div><!-- Toast Container -->
-  <div id="toastContainer" class="fixed bottom-4 right-4 z-50 flex flex-col gap-2"></div>
-  <script>
-    // State
-    let habits = [
-      { id: 'h1', name: 'Chanting', icon: '🕉️' },
-      { id: 'h2', name: 'DSA Question', icon: '💻' },
-      { id: 'h3', name: 'College Study', icon: '📚' },
-      { id: 'h4', name: 'Coding', icon: '👩🏻‍💻' },
-      { id: 'h5', name: '3 Lit Water', icon: '💧' },
-      { id: 'h6', name: 'Book Reading', icon: '📖' },
-      { id: 'h7', name: 'Walk/Workout', icon: '🚶‍♀️' },
-      { id: 'h8', name: 'No Reels', icon: '🚫' },
-      { id: 'h9', name: 'Daily Planning', icon: '📝' },
-      { id: 'h10', name: 'Thread Post', icon: '🌸' },
-      { id: 'h11', name: 'New Words', icon: '🧠' },
-      { id: 'h12', name: 'Revision', icon: '🔁' },
-      { id: 'h13', name: 'Healthy Food', icon: '🥗' },
-      { id: 'h14', name: 'No Game', icon: '🎮' }
-    ];
-    
-    let allRecords = [];
-    let selectedDate = new Date();
-    let viewMonth = new Date();
-    let currentRecordCount = 0;
-    
-    const dateStr = (d) => `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
-    const todayStr = () => dateStr(new Date());
-    
-    const defaultConfig = {
-      app_title: 'Habit Tracker',
-      motivational_quote: 'Success starts the moment you stop postponing your potential.',
-      background_color: '#faf8f6',
-      surface_color: '#ffffff',
-      text_color: '#2d2825',
-      primary_color: '#d4a574',
-      secondary_color: '#f5e6d3',
-      accent_color: '#e8d5c4',
-      font_family: 'Outfit',
-      font_size: 14
-    };
-    
-    function showToast(msg, type='success') {
-      const c = document.getElementById('toastContainer');
-      const t = document.createElement('div');
-      t.className = 'toast px-4 py-3 rounded-lg text-sm font-medium shadow-lg text-white';
-      t.style.background = type === 'error' ? '#e74c3c' : 'var(--clr-primary)';
-      t.textContent = msg;
-      c.appendChild(t);
-      setTimeout(() => t.remove(), 3000);
+
+    <!-- Add Habit Form -->
+    <div class="add-form" id="addForm">
+      <div style="display:flex;gap:.4rem;margin-bottom:.5rem;flex-wrap:wrap">
+        <input id="newName" type="text" placeholder="Habit name..." style="flex:1;min-width:120px">
+        <select id="newIcon">
+          <option value="🕉️">🕉️ Chanting</option>
+          <option value="💻">💻 DSA</option>
+          <option value="📚">📚 Study</option>
+          <option value="👩‍💻">👩‍💻 Coding</option>
+          <option value="💧">💧 Water</option>
+          <option value="📖">📖 Reading</option>
+          <option value="🚶">🚶 Workout</option>
+          <option value="🚫">🚫 No Reels</option>
+          <option value="📝">📝 Planning</option>
+          <option value="🌸">🌸 Post</option>
+          <option value="🧠">🧠 Words</option>
+          <option value="🔁">🔁 Revision</option>
+          <option value="🥗">🥗 Healthy Food</option>
+          <option value="🎮">🎮 No Game</option>
+        </select>
+      </div>
+      <div style="display:flex;gap:.4rem">
+        <button class="btn btn-primary" style="flex:1" onclick="addHabit()">Save</button>
+        <button class="btn" style="border:2px solid #ddd;background:#fff" onclick="toggleAddForm()">Cancel</button>
+      </div>
+    </div>
+
+    <!-- Habit List -->
+    <div id="habitsList"></div>
+    <p id="emptyMsg" style="text-align:center;color:#8b7355;padding:1rem;display:none">
+      No habits yet. Click <strong>+ Add Habit</strong> to begin! 🌟
+    </p>
+
+    <button class="btn btn-primary btn-wide" style="margin-top:.7rem" onclick="endDay()">
+      ✅ End Day &amp; Move to Tomorrow
+    </button>
+  </div>
+
+  <!-- Date Navigation -->
+  <div class="card fade-in">
+    <div class="nav-row">
+      <button class="btn btn-primary" onclick="prevDay()">&#8249;</button>
+      <div class="center">
+        <p style="font-size:.75rem;color:#8b7355;font-weight:600;letter-spacing:.5px">SELECTED DATE</p>
+        <p id="selDateLabel" style="font-weight:700;font-size:1rem">Today</p>
+      </div>
+      <button class="btn btn-primary" onclick="nextDay()">&#8250;</button>
+    </div>
+  </div>
+
+  <!-- Progress -->
+  <div class="card fade-in">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.4rem">
+      <span style="font-weight:700;font-size:1rem">Daily Progress</span>
+      <span id="progText" style="font-size:1.4rem;font-weight:800;color:var(--clr-primary)">0 / 0</span>
+    </div>
+    <div class="progress-bar"><div class="progress-fill" id="progFill" style="width:0%"></div></div>
+    <p id="progLabel" style="font-size:.75rem;color:#8b7355;margin-top:.3rem">0% completed</p>
+  </div>
+
+  <!-- Graph -->
+  <div class="card fade-in">
+    <h2 style="font-size:1.05rem;font-weight:700;margin-bottom:.8rem">📊 Monthly Habit Score</h2>
+    <svg id="scoreGraph" viewBox="0 0 560 220" style="width:100%;display:block"></svg>
+    <p style="font-size:.75rem;color:#8b7355;margin-top:.4rem">Habits completed each day this month</p>
+  </div>
+
+  <!-- Quote -->
+  <div class="quote-card">
+    Success starts the moment you stop postponing your potential.
+  </div>
+
+</div>
+
+<!-- Toast -->
+<div id="toast-area"></div>
+
+<script>
+const LS_HABITS  = 'ht_habits';
+const LS_RECORDS = 'ht_records';
+const LS_DATE    = 'ht_selDate';
+
+const defaultHabits = [
+  {id:'h1', name:'Chanting',      icon:'🕉️'},
+  {id:'h2', name:'DSA Question',  icon:'💻'},
+  {id:'h3', name:'College Study', icon:'📚'},
+  {id:'h4', name:'Coding',        icon:'👩‍💻'},
+  {id:'h5', name:'3 Lit Water',   icon:'💧'},
+  {id:'h6', name:'Book Reading',  icon:'📖'},
+  {id:'h7', name:'Walk/Workout',  icon:'🚶'},
+  {id:'h8', name:'No Reels',      icon:'🚫'},
+  {id:'h9', name:'Daily Planning',icon:'📝'},
+  {id:'h10',name:'Thread Post',   icon:'🌸'},
+  {id:'h11',name:'New Words',     icon:'🧠'},
+  {id:'h12',name:'Revision',      icon:'🔁'},
+  {id:'h13',name:'Healthy Food',  icon:'🥗'},
+  {id:'h14',name:'No Game',       icon:'🎮'}
+];
+
+let habits  = lsLoad(LS_HABITS,  defaultHabits);
+let records = lsLoad(LS_RECORDS, {});
+let selDate = new Date();
+try { const s = localStorage.getItem(LS_DATE); if (s) selDate = new Date(s); } catch(e){}
+
+/* ── helpers ── */
+function lsLoad(key, def) {
+  try { const v = localStorage.getItem(key); return v ? JSON.parse(v) : def; }
+  catch(e) { return def; }
+}
+function lsSave(key, val) {
+  try { localStorage.setItem(key, JSON.stringify(val)); } catch(e){}
+}
+function ds(d) {
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+}
+function getCompleted(dateStr) {
+  return new Set(Object.keys(records[dateStr] || {}).filter(id => records[dateStr][id]));
+}
+function setRecord(dateStr, habitId, val) {
+  if (!records[dateStr]) records[dateStr] = {};
+  records[dateStr][habitId] = val;
+  lsSave(LS_RECORDS, records);
+}
+function toast(msg, isErr) {
+  const a = document.getElementById('toast-area');
+  const t = document.createElement('div');
+  t.className = 'toast';
+  t.style.background = isErr ? '#c0392b' : 'var(--clr-primary)';
+  t.textContent = msg;
+  a.appendChild(t);
+  setTimeout(() => t.remove(), 3000);
+}
+
+/* ── actions ── */
+function toggleHabit(id, val) {
+  setRecord(ds(selDate), id, val);
+  renderHabits();
+  updateStats();
+  renderGraph();
+}
+
+function completeAll() {
+  const d = ds(selDate);
+  habits.forEach(h => setRecord(d, h.id, true));
+  renderHabits(); updateStats(); renderGraph();
+  toast('All habits completed! 🎉');
+}
+
+function uncheckAll() {
+  const d = ds(selDate);
+  const comp = getCompleted(d);
+  if (comp.size === 0) { toast('No checked habits to uncheck', true); return; }
+  habits.forEach(h => { if (comp.has(h.id)) setRecord(d, h.id, false); });
+  renderHabits(); updateStats(); renderGraph();
+  toast('All habits unchecked! ↩️');
+}
+
+function getStreak(habitId) {
+  let streak = 0;
+  const d = new Date();
+  while (true) {
+    const s = ds(d);
+    if (records[s] && records[s][habitId]) { streak++; d.setDate(d.getDate() - 1); }
+    else break;
+  }
+  return streak;
+}
+
+function addHabit() {
+  const name = document.getElementById('newName').value.trim();
+  if (!name) { toast('Enter a habit name', true); return; }
+  const icon = document.getElementById('newIcon').value;
+  habits.push({ id: 'h' + Date.now(), name, icon });
+  lsSave(LS_HABITS, habits);
+  document.getElementById('newName').value = '';
+  document.getElementById('addForm').classList.remove('open');
+  renderHabits(); renderGraph();
+  toast('Habit added! ✨');
+}
+
+function removeHabit(id) {
+  habits = habits.filter(h => h.id !== id);
+  lsSave(LS_HABITS, habits);
+  renderHabits(); updateStats(); renderGraph();
+  toast('Habit removed');
+}
+
+function toggleAddForm() {
+  const f = document.getElementById('addForm');
+  f.classList.toggle('open');
+  if (f.classList.contains('open')) document.getElementById('newName').focus();
+}
+
+function prevDay() { selDate.setDate(selDate.getDate() - 1); saveSelDate(); refresh(); }
+function nextDay() { selDate.setDate(selDate.getDate() + 1); saveSelDate(); refresh(); }
+function saveSelDate() { try { localStorage.setItem(LS_DATE, selDate.toISOString()); } catch(e){} }
+
+function endDay() {
+  const d = ds(selDate);
+  const comp = getCompleted(d).size;
+  const total = habits.length;
+  nextDay();
+  toast(`Day ended! ${comp}/${total} habits done 🌟`);
+}
+
+/* ── render ── */
+function renderHabits() {
+  const list  = document.getElementById('habitsList');
+  const empty = document.getElementById('emptyMsg');
+  if (habits.length === 0) { list.innerHTML = ''; empty.style.display = 'block'; return; }
+  empty.style.display = 'none';
+  const d    = ds(selDate);
+  const comp = getCompleted(d);
+  list.innerHTML = habits.map(h => {
+    const checked = comp.has(h.id);
+    return `
+      <div class="habit-row${checked ? ' checked' : ''}"
+           onclick="if(event.target.tagName!=='INPUT'&&event.target.tagName!=='BUTTON') toggleHabit('${h.id}',${!checked})">
+        <input type="checkbox" ${checked ? 'checked' : ''}
+               onchange="toggleHabit('${h.id}',this.checked)"
+               onclick="event.stopPropagation()">
+        <span style="font-size:1.3rem">${h.icon}</span>
+        <span class="habit-name${checked ? ' done' : ''}">${h.name}</span>
+        <span class="streak-badge">🔥 ${getStreak(h.id)}</span>
+        <button class="remove-btn"
+                onclick="event.stopPropagation();removeHabit('${h.id}')"
+                title="Remove">✕</button>
+      </div>`;
+  }).join('');
+}
+
+function updateStats() {
+  const d     = ds(selDate);
+  const comp  = getCompleted(d).size;
+  const total = habits.length;
+  const pct   = total ? Math.round(comp / total * 100) : 0;
+  document.getElementById('progText').textContent  = `${comp} / ${total}`;
+  document.getElementById('progFill').style.width  = `${pct}%`;
+  document.getElementById('progLabel').textContent = `${pct}% completed`;
+
+  let streak = 0;
+  if (total > 0) {
+    const d2 = new Date();
+    while (true) {
+      const s = ds(d2);
+      if (getCompleted(s).size >= total) { streak++; d2.setDate(d2.getDate() - 1); }
+      else break;
     }
-    
-    
-    function renderCalendar() {
-      const dateEl = document.getElementById('currentDate');
-      if (dateEl) {
-        const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-        dateEl.textContent = new Date().toLocaleDateString('en-US', options);
-      }
+  }
+  document.getElementById('dayCount').textContent = streak;
+}
+
+function updateDateLabel() {
+  const el    = document.getElementById('selDateLabel');
+  const today = new Date();
+  const yest  = new Date(today); yest.setDate(yest.getDate() - 1);
+  const s     = ds(selDate);
+  if (s === ds(today))     el.textContent = 'Today';
+  else if (s === ds(yest)) el.textContent = 'Yesterday';
+  else el.textContent = selDate.toLocaleDateString('en-US', {month:'short', day:'numeric', year:'numeric'});
+}
+
+function renderGraph() {
+  const svg = document.getElementById('scoreGraph');
+  const now = new Date();
+  const yr  = now.getFullYear(), mo = now.getMonth();
+  const days = new Date(yr, mo + 1, 0).getDate();
+
+  const scores = [];
+  for (let d = 1; d <= days; d++) {
+    scores.push(getCompleted(ds(new Date(yr, mo, d))).size);
+  }
+
+  const maxS = Math.max(...scores, habits.length, 1);
+  const W=560, H=220, pl=38, pr=16, pt=14, pb=36;
+  const pw = W - pl - pr, ph = H - pt - pb;
+  const sp = days > 1 ? pw / (days - 1) : pw / 2;
+
+  const pts = scores.map((sc, i) => ({ x: pl + i * sp, y: pt + ph - (sc / maxS) * ph }));
+  const linePath = pts.map((p, i) => (i === 0 ? `M${p.x},${p.y}` : `L${p.x},${p.y}`)).join(' ');
+  const areaPath = pts.length
+    ? `${linePath} L${pts[pts.length-1].x},${pt+ph} L${pts[0].x},${pt+ph} Z`
+    : '';
+
+  const gridLines = [.25, .5, .75, 1].map(f => {
+    const y = pt + ph - f * ph;
+    return `<line x1="${pl}" y1="${y}" x2="${W-pr}" y2="${y}" stroke="#e8d5c4" stroke-width="1"/>
+            <text x="${pl-5}" y="${y+4}" text-anchor="end" font-size="10" fill="#8b7355">${Math.round(maxS*f)}</text>`;
+  }).join('');
+
+  const xLabels = scores.map((_, i) => {
+    if (i === 0 || i === days - 1 || (i + 1) % 5 === 0) {
+      return `<text x="${pl+i*sp}" y="${pt+ph+22}" text-anchor="middle" font-size="10" fill="#8b7355">${i+1}</text>`;
     }
-    
-    function renderScoreGraph() {
-      const svg = document.getElementById('scoreGraph');
-      if (!svg) return;
-      
-      const now = new Date();
-      const currentMonth = now.getMonth();
-      const currentYear = now.getFullYear();
-      const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
-      
-      // Calculate scores for each day
-      const dailyScores = [];
-      for (let d = 1; d <= daysInMonth; d++) {
-        const date = new Date(currentYear, currentMonth, d);
-        const ds = dateStr(date);
-        const completed = allRecords.filter(r => r.date === ds && r.completed).length;
-        dailyScores.push(completed);
-      }
-      
-      const maxScore = Math.max(habits.length, 1);
-      const width = 600, height = 280;
-      const padding = { top: 20, right: 20, bottom: 40, left: 40 };
-      const plotWidth = width - padding.left - padding.right;
-      const plotHeight = height - padding.top - padding.bottom;
-      const pointSpacing = daysInMonth > 1 ? plotWidth / (daysInMonth - 1) : plotWidth / 2;
-      
-      let pathData = '';
-      dailyScores.forEach((score, i) => {
-        const x = padding.left + i * pointSpacing;
-        const y = padding.top + plotHeight - (score / maxScore) * plotHeight;
-        if (i === 0) {
-          pathData += `M ${x} ${y}`;
-        } else {
-          pathData += ` L ${x} ${y}`;
-        }
-      });
-      
-      svg.innerHTML = `
-        <!-- Grid lines -->
-        <line x1="${padding.left}" y1="${padding.top + plotHeight * 0.75}" x2="${width - padding.right}" y2="${padding.top + plotHeight * 0.75}" stroke="#e8d5c4" stroke-width="1"/>
-        <line x1="${padding.left}" y1="${padding.top + plotHeight * 0.5}" x2="${width - padding.right}" y2="${padding.top + plotHeight * 0.5}" stroke="#e8d5c4" stroke-width="1"/>
-        <line x1="${padding.left}" y1="${padding.top + plotHeight * 0.25}" x2="${width - padding.right}" y2="${padding.top + plotHeight * 0.25}" stroke="#e8d5c4" stroke-width="1"/>
-        
-        <!-- Y-axis labels -->
-        <text x="${padding.left - 10}" y="${padding.top + plotHeight + 5}" text-anchor="end" font-size="11" fill="#8b7355">0</text>
-        <text x="${padding.left - 10}" y="${padding.top + plotHeight * 0.75 + 5}" text-anchor="end" font-size="11" fill="#8b7355">${Math.ceil(maxScore * 0.25)}</text>
-        <text x="${padding.left - 10}" y="${padding.top + plotHeight * 0.5 + 5}" text-anchor="end" font-size="11" fill="#8b7355">${Math.ceil(maxScore * 0.5)}</text>
-        <text x="${padding.left - 10}" y="${padding.top + plotHeight * 0.25 + 5}" text-anchor="end" font-size="11" fill="#8b7355">${Math.ceil(maxScore * 0.75)}</text>
-        <text x="${padding.left - 10}" y="${padding.top + 5}" text-anchor="end" font-size="11" fill="#8b7355">${maxScore}</text>
-        
-        <!-- Axes -->
-        <line x1="${padding.left}" y1="${padding.top}" x2="${padding.left}" y2="${padding.top + plotHeight}" stroke="#2d2825" stroke-width="2"/>
-        <line x1="${padding.left}" y1="${padding.top + plotHeight}" x2="${width - padding.right}" y2="${padding.top + plotHeight}" stroke="#2d2825" stroke-width="2"/>
-        
-        <!-- Line -->
-        ${pathData ? `<path d="${pathData}" stroke="#d4a574" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>` : ''}
-        
-        <!-- Points -->
-        ${dailyScores.map((score, i) => {
-          const x = padding.left + i * pointSpacing;
-          const y = padding.top + plotHeight - (score / maxScore) * plotHeight;
-          return `<circle cx="${x}" cy="${y}" r="3.5" fill="#d4a574" stroke="#ffffff" stroke-width="2"/>`;
-        }).join('')}
-        
-        <!-- X-axis labels (every 5 days) -->
-        ${dailyScores.map((_, i) => {
-          if (i % 5 === 0 || i === daysInMonth - 1) {
-            const x = padding.left + i * pointSpacing;
-            return `<text x="${x}" y="${padding.top + plotHeight + 25}" text-anchor="middle" font-size="11" fill="#8b7355">${i + 1}</text>`;
-          }
-          return '';
-        }).join('')}
-      `;
-    }
-    
-    function previousDay() {
-      selectedDate.setDate(selectedDate.getDate() - 1);
-      localStorage.setItem('ht_selectedDate', selectedDate.toISOString());
-      updateDateDisplay();
-      renderHabits();
-      updateStats();
-    }
-    
-    function nextDay() {
-      selectedDate.setDate(selectedDate.getDate() + 1);
-      localStorage.setItem('ht_selectedDate', selectedDate.toISOString());
-      updateDateDisplay();
-      renderHabits();
-      updateStats();
-    }
-    
-    function updateDateDisplay() {
-      const display = document.getElementById('selectedDateDisplay');
-      const today = new Date();
-      const isToday = dateStr(selectedDate) === dateStr(today);
-      
-      if (isToday) {
-        display.textContent = 'Today';
-      } else {
-        const yesterday = new Date(today);
-        yesterday.setDate(yesterday.getDate() - 1);
-        const isTomorrow = new Date(selectedDate).toDateString() === new Date(today).toDateString();
-        const isYesterday = dateStr(selectedDate) === dateStr(yesterday);
-        
-        if (isYesterday) {
-          display.textContent = 'Yesterday';
-        } else {
-          const options = { month: 'short', day: 'numeric' };
-          display.textContent = selectedDate.toLocaleDateString('en-US', options);
-        }
-      }
-    }
-    
-    function renderHabits() {
-      const list = document.getElementById('habitsList');
-      const empty = document.getElementById('emptyHabits');
-      
-      if (habits.length === 0) {
-        list.innerHTML = '';
-        empty.classList.remove('hidden');
-        return;
-      }
-      
-      empty.classList.add('hidden');
-      const ds = dateStr(selectedDate);
-      const completedIds = new Set(allRecords.filter(r => r.date === ds && r.completed).map(r => r.habit_id));
-      
-      list.innerHTML = habits.map(h => {
-        const checked = completedIds.has(h.id);
-        return `
-          <label class="habit-item flex items-center gap-3 p-3 rounded-lg cursor-pointer ${checked ? 'checked' : ''}">
-            <input type="checkbox" ${checked ? 'checked' : ''} onchange="toggleHabit('${h.id}', this.checked)" class="w-5 h-5">
-            <span class="text-2xl">${h.icon}</span>
-            <span class="text-sm font-medium flex-1 ${checked ? 'line-through opacity-50' : ''}">${h.name}</span>
-            <span class="text-xs px-3 py-1 rounded-full font-semibold" style="background: var(--clr-secondary); color: var(--clr-primary);">🔥 ${getStreak(h.id)}</span>
-            <button onclick="event.preventDefault(); removeHabit('${h.id}')" class="p-1 opacity-50 hover:opacity-100 transition">
-              <i data-lucide="x" style="width: 14px; height: 14px;"></i>
-            </button>
-          </label>
-        `;
-      }).join('');
-      
-      lucide.createIcons();
-      updateStats();
-    }
-    
-    function getStreak(habitId) {
-      let streak = 0;
-      const d = new Date();
-      while (true) {
-        const ds = dateStr(d);
-        if (allRecords.some(r => r.habit_id === habitId && r.date === ds && r.completed)) {
-          streak++;
-          d.setDate(d.getDate() - 1);
-        } else break;
-      }
-      return streak;
-    }
-    
-    async function toggleHabit(habitId, checked) {
-      const ds = dateStr(selectedDate);
-      const existing = allRecords.find(r => r.habit_id === habitId && r.date === ds);
-      
-      if (existing) {
-        await window.dataSdk.update({ ...existing, completed: checked });
-      } else {
-        if (currentRecordCount >= 999) {
-          showToast('Storage limit reached!', 'error');
-          return;
-        }
-        await window.dataSdk.create({ habit_id: habitId, date: ds, completed: checked });
-      }
-    }
-    
-    async function completeAll() {
-      const ds = dateStr(selectedDate);
-      let createdCount = 0;
-      let updatedCount = 0;
-      
-      for (const habit of habits) {
-        const existing = allRecords.find(r => r.habit_id === habit.id && r.date === ds);
-        if (existing && !existing.completed) {
-          await window.dataSdk.update({ ...existing, completed: true });
-          updatedCount++;
-        } else if (!existing) {
-          if (currentRecordCount + createdCount >= 999) {
-            showToast('Storage limit reached!', 'error');
-            return;
-          }
-          await window.dataSdk.create({ habit_id: habit.id, date: ds, completed: true });
-          createdCount++;
-        }
-      }
-      
-      if (createdCount > 0 || updatedCount > 0) {
-        showToast(`All habits completed! 🎉`);
-      }
-    }
-    
-    async function endDayAndMove() {
-      const ds = dateStr(selectedDate);
-      const todayCompleted = allRecords.filter(r => r.date === ds && r.completed).length;
-      const total = habits.length;
-      
-      if (total === 0) {
-        showToast('Add some habits first!', 'error');
-        return;
-      }
-      
-      nextDay();
-      showToast(`Day ended! You completed ${todayCompleted}/${total} habits 🌟`);
-    }
-    
-    function showAddHabit() {
-      document.getElementById('addHabitForm').classList.remove('hidden');
-      document.getElementById('newHabitInput').focus();
-    }
-    
-    function cancelAddHabit() {
-      document.getElementById('addHabitForm').classList.add('hidden');
-      document.getElementById('newHabitInput').value = '';
-    }
-    
-    function addHabit() {
-      const input = document.getElementById('newHabitInput');
-      const name = input.value.trim();
-      
-      if (!name) {
-        showToast('Please enter a habit name', 'error');
-        return;
-      }
-      
-      const icon = document.getElementById('newHabitIcon').value;
-      habits.push({ id: 'h' + Date.now(), name, icon });
-      input.value = '';
-      
-      cancelAddHabit();
-      localStorage.setItem('ht_habits', JSON.stringify(habits));
-      renderHabits();
-      showToast('Habit added! ✨');
-    }
-    
-    function removeHabit(id) {
-      habits = habits.filter(h => h.id !== id);
-      localStorage.setItem('ht_habits', JSON.stringify(habits));
-      renderHabits();
-      showToast('Habit removed');
-    }
-    
-    function updateStats() {
-      const ds = dateStr(selectedDate);
-      const todayCompleted = allRecords.filter(r => r.date === ds && r.completed).length;
-      const total = habits.length;
-      const pct = total ? Math.round(todayCompleted / total * 100) : 0;
-      
-      document.getElementById('progressText').textContent = `${todayCompleted} / ${total}`;
-      document.getElementById('progressFill').style.width = `${pct}%`;
-      document.getElementById('progressLabel').textContent = `${pct}% completed`;
-      
-      // Current streak (all habits completed days)
-      let streak = 0;
-      const d = new Date();
-      if (total > 0) {
-        while (true) {
-          const s = dateStr(d);
-          const done = allRecords.filter(r => r.date === s && r.completed).length;
-          if (done >= total) {
-            streak++;
-            d.setDate(d.getDate() - 1);
-          } else break;
-        }
-      }
-      
-      document.getElementById('dayCount').textContent = streak;
-    }
-    
-    // Load saved habits
-    const savedHabits = localStorage.getItem('ht_habits');
-    if (savedHabits) {
-      try {
-        habits = JSON.parse(savedHabits);
-      } catch(e) {}
-    }
-    
-    // Load saved selected date
-    const savedDate = localStorage.getItem('ht_selectedDate');
-    if (savedDate) {
-      try {
-        selectedDate = new Date(savedDate);
-      } catch(e) {}
-    }
-    
-    // Data SDK
-    const dataHandler = {
-      onDataChanged(data) {
-        allRecords = data;
-        currentRecordCount = data.length;
-        renderHabits();
-        renderCalendar();
-        renderScoreGraph();
-      }
-    };
-    
-    // Element SDK
-    function applyConfig(config) {
-      const r = document.documentElement.style;
-      r.setProperty('--clr-bg', config.background_color || defaultConfig.background_color);
-      r.setProperty('--clr-surface', config.surface_color || defaultConfig.surface_color);
-      r.setProperty('--clr-text', config.text_color || defaultConfig.text_color);
-      r.setProperty('--clr-primary', config.primary_color || defaultConfig.primary_color);
-      r.setProperty('--clr-secondary', config.secondary_color || defaultConfig.secondary_color);
-      r.setProperty('--clr-accent', config.accent_color || defaultConfig.accent_color);
-      
-      document.body.style.color = config.text_color || defaultConfig.text_color;
-      document.body.style.background = config.background_color || defaultConfig.background_color;
-      
-      const font = config.font_family || defaultConfig.font_family;
-      document.body.style.fontFamily = `${font}, sans-serif`;
-      
-      const title = config.app_title || defaultConfig.app_title;
-      const headerTitle = document.getElementById('headerTitle');
-      if (headerTitle) headerTitle.textContent = title;
-      
-      const quote = config.motivational_quote || defaultConfig.motivational_quote;
-      const quoteEl = document.getElementById('motivationalQuote');
-      if (quoteEl) quoteEl.textContent = quote;
-    }
-    
-    window.elementSdk.init({
-      defaultConfig,
-      onConfigChange: async (config) => applyConfig(config),
-      mapToCapabilities: (config) => ({
-        recolorables: [
-          { get: () => config.background_color || defaultConfig.background_color, set: (v) => { config.background_color = v; window.elementSdk.setConfig({ background_color: v }); } },
-          { get: () => config.surface_color || defaultConfig.surface_color, set: (v) => { config.surface_color = v; window.elementSdk.setConfig({ surface_color: v }); } },
-          { get: () => config.text_color || defaultConfig.text_color, set: (v) => { config.text_color = v; window.elementSdk.setConfig({ text_color: v }); } },
-          { get: () => config.primary_color || defaultConfig.primary_color, set: (v) => { config.primary_color = v; window.elementSdk.setConfig({ primary_color: v }); } },
-          { get: () => config.secondary_color || defaultConfig.secondary_color, set: (v) => { config.secondary_color = v; window.elementSdk.setConfig({ secondary_color: v }); } }
-        ],
-        borderables: [],
-        fontEditable: { get: () => config.font_family || defaultConfig.font_family, set: (v) => { config.font_family = v; window.elementSdk.setConfig({ font_family: v }); } },
-        fontSizeable: { get: () => config.font_size || defaultConfig.font_size, set: (v) => { config.font_size = v; window.elementSdk.setConfig({ font_size: v }); } }
-      }),
-      mapToEditPanelValues: (config) => new Map([
-        ['app_title', config.app_title || defaultConfig.app_title],
-        ['motivational_quote', config.motivational_quote || defaultConfig.motivational_quote]
-      ])
-    });
-    
-    (async () => {
-      const res = await window.dataSdk.init(dataHandler);
-      if (!res.isOk) console.error('Data SDK init failed');
-      renderCalendar();
-      renderScoreGraph();
-      renderHabits();
-      updateDateDisplay();
-      lucide.createIcons();
-    })();
-  </script>
- <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9f2cbbb3f5833f9d',t:'MTc3NzI4MTQzNy4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+    return '';
+  }).join('');
+
+  const dots = pts.map(p =>
+    `<circle cx="${p.x}" cy="${p.y}" r="3" fill="#d4a574" stroke="#fff" stroke-width="1.5"/>`
+  ).join('');
+
+  svg.innerHTML = `
+    <defs>
+      <linearGradient id="ag" x1="0" x2="0" y1="0" y2="1">
+        <stop offset="0%"   stop-color="#d4a574" stop-opacity=".25"/>
+        <stop offset="100%" stop-color="#d4a574" stop-opacity=".03"/>
+      </linearGradient>
+    </defs>
+    <text x="${pl-5}" y="${pt+ph+4}" text-anchor="end" font-size="10" fill="#8b7355">0</text>
+    ${gridLines}
+    <line x1="${pl}" y1="${pt}"    x2="${pl}"    y2="${pt+ph}" stroke="#2d2825" stroke-width="1.5"/>
+    <line x1="${pl}" y1="${pt+ph}" x2="${W-pr}"  y2="${pt+ph}" stroke="#2d2825" stroke-width="1.5"/>
+    ${areaPath  ? `<path d="${areaPath}"  fill="url(#ag)"/>` : ''}
+    ${linePath  ? `<path d="${linePath}"  stroke="#d4a574" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>` : ''}
+    ${dots}
+    ${xLabels}
+  `;
+}
+
+function refresh() {
+  updateDateLabel();
+  renderHabits();
+  updateStats();
+}
+
+/* ── init ── */
+refresh();
+renderGraph();
+</script>
+</body>
 </html>
