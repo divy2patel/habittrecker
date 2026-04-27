@@ -129,34 +129,50 @@
  <body class="h-full" style="background: var(--clr-bg); color: var(--clr-text);">
   <div id="app" class="h-full flex flex-col overflow-auto">
    <main class="flex-1 overflow-auto p-4 md:p-6 lg:p-8">
-    <div class="max-w-2xl mx-auto space-y-6"><!-- Header -->
+    <div class="max-w-2xl mx-auto space-y-6">
+     <!-- Header -->
      <div class="fade-in">
       <h1 id="headerTitle" class="text-3xl md:text-4xl font-bold">Habit Tracker</h1>
       <p id="headerSubtitle" class="text-sm mt-2" style="color: #8b7355; opacity: 0.8;">Success starts the moment you stop postponing your potential.</p>
      </div><!-- Day Counter -->
      <div class="day-badge card p-6 md:p-8 text-center fade-in">
       <p style="color: #8b7355; font-size: 0.9rem; font-weight: 500; letter-spacing: 1px;">CONSECUTIVE DAYS</p>
-      <div class="text-5xl md:text-6xl font-bold mt-2 mb-1" style="color: var(--clr-text);"><span id="dayCount">0</span>
+      <div class="text-5xl md:text-6xl font-bold mt-2 mb-1" style="color: var(--clr-text);">
+       <span id="dayCount">0</span>
       </div>
       <p style="color: #8b7355; font-size: 0.95rem;">Keep the streak alive! 🔥</p>
      </div><!-- Today's Habits -->
      <div class="card p-6 fade-in">
       <div class="flex items-center justify-between mb-4">
-       <h2 class="text-xl font-bold">📝 Today's Habits</h2><button onclick="showAddHabit()" class="btn-primary px-4 py-2 text-sm flex items-center gap-2"> <i data-lucide="plus" style="width: 16px; height: 16px;"></i> Add Habit </button>
+       <h2 class="text-xl font-bold">📝 Today's Habits</h2>
+       <div class="flex gap-2">
+        <button onclick="completeAll()" class="btn-primary px-4 py-2 text-sm flex items-center gap-2"> <i data-lucide="check-circle" style="width: 16px; height: 16px;"></i> Complete All </button> <button onclick="showAddHabit()" class="btn-primary px-4 py-2 text-sm flex items-center gap-2"> <i data-lucide="plus" style="width: 16px; height: 16px;"></i> Add Habit </button>
+       </div>
       </div><!-- Add Habit Form -->
       <div id="addHabitForm" class="hidden mb-4 p-4 rounded-12 border-2" style="border-color: var(--clr-primary); background: var(--clr-secondary);">
-       <div class="flex gap-2 mb-2"><input id="newHabitInput" type="text" placeholder="Habit name..." class="flex-1 px-3 py-2 rounded-lg border-2" style="border-color: #ddd; outline: none;"> <select id="newHabitIcon" class="px-3 py-2 rounded-lg border-2" style="border-color: #ddd;"> <option value="🕉️">🕉️ Chanting</option> <option value="💻">💻 DSA Question</option> <option value="📚">📚 College Study</option> <option value="👩🏻‍💻">👩🏻‍💻 Coding</option> <option value="💧">💧 3 Lit Water</option> <option value="📖">📖 Book Reading</option> <option value="🚶‍♀️">🚶‍♀️ Walk/Workout</option> <option value="🚫">🚫 No Reels</option> <option value="📝">📝 Daily Planning</option> <option value="🌸">🌸 Thread Post</option> <option value="🧠">🧠 New Words</option> <option value="🔁">🔁 Revision</option> <option value="🥗">🥗 Healthy Food</option> </select>
+       <div class="flex gap-2 mb-2">
+        <input id="newHabitInput" type="text" placeholder="Habit name..." class="flex-1 px-3 py-2 rounded-lg border-2" style="border-color: #ddd; outline: none;"> <select id="newHabitIcon" class="px-3 py-2 rounded-lg border-2" style="border-color: #ddd;"> <option value="🕉️">🕉️ Chanting</option> <option value="💻">💻 DSA Question</option> <option value="📚">📚 College Study</option> <option value="👩🏻‍💻">👩🏻‍💻 Coding</option> <option value="💧">💧 3 Lit Water</option> <option value="📖">📖 Book Reading</option> <option value="🚶‍♀️">🚶‍♀️ Walk/Workout</option> <option value="🚫">🚫 No Reels</option> <option value="📝">📝 Daily Planning</option> <option value="🌸">🌸 Thread Post</option> <option value="🧠">🧠 New Words</option> <option value="🔁">🔁 Revision</option> <option value="🥗">🥗 Healthy Food</option> </select>
        </div>
-       <div class="flex gap-2"><button onclick="addHabit()" class="btn-primary px-4 py-2 text-sm flex-1">Save</button> <button onclick="cancelAddHabit()" class="px-4 py-2 rounded-lg" style="border: 2px solid #ddd; background: transparent; cursor: pointer;">Cancel</button>
+       <div class="flex gap-2">
+        <button onclick="addHabit()" class="btn-primary px-4 py-2 text-sm flex-1">Save</button> <button onclick="cancelAddHabit()" class="px-4 py-2 rounded-lg" style="border: 2px solid #ddd; background: transparent; cursor: pointer;">Cancel</button>
        </div>
       </div><!-- Habits List -->
       <div id="habitsList" class="space-y-2"></div>
       <div id="emptyHabits" class="text-center py-6" style="color: #8b7355;">
        <p>No habits yet. Click <strong>Add Habit</strong> to get started! 🌟</p>
+      </div><button onclick="endDayAndMove()" class="btn-primary w-full px-4 py-3 text-sm font-semibold flex items-center justify-center gap-2"> <i data-lucide="check-square" style="width: 18px; height: 18px;"></i> End Day &amp; Move to Tomorrow </button>
+     </div><!-- Date Navigation -->
+     <div class="card p-6 fade-in">
+      <div class="flex items-center justify-between mb-4"><button onclick="previousDay()" class="btn-primary px-3 py-2 text-sm flex items-center gap-2"> <i data-lucide="chevron-left" style="width: 16px; height: 16px;"></i> </button>
+       <div class="text-center flex-1">
+        <p style="color: #8b7355; font-size: 0.85rem; font-weight: 500;">Selected Date</p>
+        <p id="selectedDateDisplay" class="text-lg font-bold">Today</p>
+       </div><button onclick="nextDay()" class="btn-primary px-3 py-2 text-sm flex items-center gap-2"> <i data-lucide="chevron-right" style="width: 16px; height: 16px;"></i> </button>
       </div>
      </div><!-- Progress Section -->
      <div class="card p-6 fade-in">
-      <div class="flex items-center justify-between mb-3"><span class="text-lg font-bold">Daily Progress</span> <span id="progressText" class="text-2xl font-bold" style="color: var(--clr-primary);">0 / 0</span>
+      <div class="flex items-center justify-between mb-3">
+       <span class="text-lg font-bold">Daily Progress</span> <span id="progressText" class="text-2xl font-bold" style="color: var(--clr-primary);">0 / 0</span>
       </div>
       <div class="progress-bar h-4">
        <div id="progressFill" class="progress-fill" style="width: 0%;"></div>
@@ -310,12 +326,40 @@
       `;
     }
     
-    function changeMonth(dir) {
-      return;
+    function previousDay() {
+      selectedDate.setDate(selectedDate.getDate() - 1);
+      updateDateDisplay();
+      renderHabits();
+      updateStats();
     }
     
-    function selectDate(y, m, d) {
-      return;
+    function nextDay() {
+      selectedDate.setDate(selectedDate.getDate() + 1);
+      updateDateDisplay();
+      renderHabits();
+      updateStats();
+    }
+    
+    function updateDateDisplay() {
+      const display = document.getElementById('selectedDateDisplay');
+      const today = new Date();
+      const isToday = dateStr(selectedDate) === dateStr(today);
+      
+      if (isToday) {
+        display.textContent = 'Today';
+      } else {
+        const yesterday = new Date(today);
+        yesterday.setDate(yesterday.getDate() - 1);
+        const isTomorrow = new Date(selectedDate).toDateString() === new Date(today).toDateString();
+        const isYesterday = dateStr(selectedDate) === dateStr(yesterday);
+        
+        if (isYesterday) {
+          display.textContent = 'Yesterday';
+        } else {
+          const options = { month: 'short', day: 'numeric' };
+          display.textContent = selectedDate.toLocaleDateString('en-US', options);
+        }
+      }
     }
     
     function renderHabits() {
@@ -377,6 +421,42 @@
         }
         await window.dataSdk.create({ habit_id: habitId, date: ds, completed: checked });
       }
+    }
+    
+    async function completeAll() {
+      const ds = dateStr(selectedDate);
+      for (const habit of habits) {
+        const existing = allRecords.find(r => r.habit_id === habit.id && r.date === ds);
+        if (existing && !existing.completed) {
+          await window.dataSdk.update({ ...existing, completed: true });
+        } else if (!existing) {
+          if (currentRecordCount >= 999) {
+            showToast('Storage limit reached!', 'error');
+            return;
+          }
+          await window.dataSdk.create({ habit_id: habit.id, date: ds, completed: true });
+        }
+      }
+      showToast('All habits completed! 🎉');
+    }
+    
+    async function endDayAndMove() {
+      const ds = dateStr(selectedDate);
+      const todayCompleted = allRecords.filter(r => r.date === ds && r.completed).length;
+      const total = habits.length;
+      
+      if (total === 0) {
+        showToast('Add some habits first!', 'error');
+        return;
+      }
+      
+      if (todayCompleted < total) {
+        showToast(`Complete all ${total - todayCompleted} remaining habits first! 💪`, 'error');
+        return;
+      }
+      
+      nextDay();
+      showToast('Great day! Moving to tomorrow 🌟');
     }
     
     function showAddHabit() {
@@ -513,8 +593,9 @@
       renderCalendar();
       renderScoreGraph();
       renderHabits();
+      updateDateDisplay();
       lucide.createIcons();
     })();
   </script>
- <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9f2ca46f541a7f16',t:'MTc3NzI4MDQ4NC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9f2cadb8a38b7f16',t:'MTc3NzI4MDg2NC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
